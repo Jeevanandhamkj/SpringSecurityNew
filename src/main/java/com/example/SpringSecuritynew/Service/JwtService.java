@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,14 @@ public class JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
                 .signWith(getsingkey(), SignatureAlgorithm.HS256).compact();
+    }
+
+    private boolean TokenExpired(String token){
+      return extractExpired(token).before(new Date());
+    }
+    public boolean validateToken(String token, UserDetails userDetails){
+      final String username=extractusername(token);
+      return (username.equals(userDetails.getUsername())&& !TokenExpired(token));
     }
 
     private Key getsingkey() {
