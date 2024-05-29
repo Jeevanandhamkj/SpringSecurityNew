@@ -4,9 +4,9 @@ import com.example.SpringSecuritynew.Dto.AuthRequest;
 import com.example.SpringSecuritynew.Entity.Userinfo;
 import com.example.SpringSecuritynew.Service.JwtService;
 import com.example.SpringSecuritynew.Service.UserInfoService;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,8 +21,10 @@ public class SchoolController {
 
     @Autowired
     UserInfoService userInfoService;
-    @Autowired
+@Autowired
     JwtService jwtService;
+
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -52,17 +54,19 @@ public class SchoolController {
     }
 
     @PostMapping("/a")
-    public String authrequesting(AuthRequest authRequest) {
+    public String authtoken(@RequestBody AuthRequest authRequest) {
         try {
-            Authentication authendication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
-            if (authendication.isAuthenticated()) {
-                return jwtService.generateToken(authRequest.getName());
-
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
+            if (authentication.isAuthenticated()) {
+                return jwtService.GenerateToken(authRequest.getName());
             } else {
-                throw new UsernameNotFoundException("username not found");
+                throw new UsernameNotFoundException("not found");
             }
+
+
         } catch (Exception e) {
-            throw new UsernameNotFoundException("username not found");
+            throw new UsernameNotFoundException("not found");
         }
+
     }
 }
